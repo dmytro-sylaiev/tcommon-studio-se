@@ -205,6 +205,8 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         warningLabel.setText(Messages.getString("InstallModuleDialog.warning", defaultURIValue) + "");
         // warningLabel.getParent().getParent().getParent().layout();
         Composite parent = warningLabel.getParent().getParent();
+        GridLayout layout = (GridLayout)parent.getLayout();
+        layout.marginBottom = 10;
         parent.layout();
         // layoutChildernComp(parent);
     }
