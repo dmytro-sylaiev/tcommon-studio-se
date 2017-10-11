@@ -568,7 +568,12 @@ public class DatabaseForm extends AbstractForm {
         }
         moveButton.setVisible(isDbPropertiesVisible);
         sash.setSashWidth(2);
-        sash.setWeights(new int[] { 25, 8 });
+        // TDQ-14352: fix can not create db connection with TOP.
+        if (isTOPStandaloneMode()) {
+            sash.setWeights(new int[] { 25 });
+        } else {
+            sash.setWeights(new int[] { 25, 8 });
+        }
         this.layout();
     }
 
@@ -767,8 +772,8 @@ public class DatabaseForm extends AbstractForm {
             jDBCschemaText.setHideWidgets(true);
         }
     }
-    
-    private void checkDatabaseProperties(){
+
+    private void checkDatabaseProperties() {
         IPreferenceStore store = CoreUIPlugin.getDefault().getPreferenceStore();
         getConnection().setSqlSynthax(store.getString(IDatabasePrefConstants.SQL_SYNTAX));
         getConnection().setStringQuote(store.getString(IDatabasePrefConstants.STRING_QUOTE));
@@ -3844,14 +3849,13 @@ public class DatabaseForm extends AbstractForm {
             // properties.
             // doHivePreSetup();
             // set the value
-            managerConnection.setValue(0, getConnectionDBType(),
-                    isGeneralJDBC() ? generalJdbcUrlText.getText() : urlConnectionStringText.getText(), serverText.getText(),
-                    isGeneralJDBC() ? generalJdbcUserText.getText() : usernameText.getText(),
-                    isGeneralJDBC() ? generalJdbcPasswordText.getText() : passwordText.getText(), sidOrDatabaseText.getText(),
-                    portText.getText(), fileField.getText(), datasourceText.getText(), isGeneralJDBC() ? jDBCschemaText.getText()
-                            : schemaText.getText(), additionParamText.getText(), generalJdbcClassNameText.getText(),
-                    generalJdbcDriverjarText.getText(), enableDbVersion() ? versionStr : null, metadataconnection
-                            .getOtherParameters());
+            managerConnection.setValue(0, getConnectionDBType(), isGeneralJDBC() ? generalJdbcUrlText.getText()
+                    : urlConnectionStringText.getText(), serverText.getText(), isGeneralJDBC() ? generalJdbcUserText.getText()
+                    : usernameText.getText(), isGeneralJDBC() ? generalJdbcPasswordText.getText() : passwordText.getText(),
+                    sidOrDatabaseText.getText(), portText.getText(), fileField.getText(), datasourceText.getText(),
+                    isGeneralJDBC() ? jDBCschemaText.getText() : schemaText.getText(), additionParamText.getText(),
+                    generalJdbcClassNameText.getText(), generalJdbcDriverjarText.getText(),
+                    enableDbVersion() ? versionStr : null, metadataconnection.getOtherParameters());
 
             managerConnection.setDbRootPath(directoryField.getText());
 
@@ -4461,26 +4465,26 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
         });
-//        // button1 parameter:Event modifyText
-//        button1.addSelectionListener(new SelectionAdapter() {
-//
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                if (!isContextMode()) {
-//                    getConnection().setSQLMode(button1.getSelection());
-//                }
-//            }
-//        });
-//        // button2 parameter:Event modifyText
-//        button2.addSelectionListener(new SelectionAdapter() {
-//
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                if (!isContextMode()) {
-//                    getConnection().setSQLMode(!button2.getSelection());
-//                }
-//            }
-//        });
+        // // button1 parameter:Event modifyText
+        // button1.addSelectionListener(new SelectionAdapter() {
+        //
+        // @Override
+        // public void widgetSelected(SelectionEvent e) {
+        // if (!isContextMode()) {
+        // getConnection().setSQLMode(button1.getSelection());
+        // }
+        // }
+        // });
+        // // button2 parameter:Event modifyText
+        // button2.addSelectionListener(new SelectionAdapter() {
+        //
+        // @Override
+        // public void widgetSelected(SelectionEvent e) {
+        // if (!isContextMode()) {
+        // getConnection().setSQLMode(!button2.getSelection());
+        // }
+        // }
+        // });
         // Event dbTypeCombo
 
         // removed for bug TDI-14797 on 26 July, 2013. for support search by keyboard's letter.
@@ -4507,8 +4511,8 @@ public class DatabaseForm extends AbstractForm {
             public void handleEvent(final Event e) {
                 if (!isContextMode()) {
                     if (getConnectionDBType().length() > 0) {
-//                        dbTypeCombo.forceFocus();
-//                    } else {
+                        // dbTypeCombo.forceFocus();
+                        // } else {
                         EDatabaseConnTemplate template = EDatabaseConnTemplate.indexOfTemplate(getConnection().getDatabaseType());
                         EDatabaseVersion4Drivers version = EDatabaseVersion4Drivers.indexOfByVersionDisplay(getConnection()
                                 .getDbVersionString());
@@ -4568,9 +4572,9 @@ public class DatabaseForm extends AbstractForm {
             addHadoopClusterLinkListeners();
         }
     }
-    
-    public void refreshDBForm(ConnectionItem connItem){
-        if(connItem != null){
+
+    public void refreshDBForm(ConnectionItem connItem) {
+        if (connItem != null) {
             this.connectionItem = connItem;
         }
         getConnection().getParameters().clear();
@@ -4681,8 +4685,7 @@ public class DatabaseForm extends AbstractForm {
             if (template != null) {
                 portText.setText(template.getDefaultPort());
             }
-            final String product = EDatabaseTypeName.getTypeFromDisplayName(getConnection().getDatabaseType())
-                    .getProduct();
+            final String product = EDatabaseTypeName.getTypeFromDisplayName(getConnection().getDatabaseType()).getProduct();
             getConnection().setProductId(product);
 
             String mapping = null;
@@ -4745,7 +4748,7 @@ public class DatabaseForm extends AbstractForm {
                 && !isDBTypeSelected(EDatabaseConnTemplate.HIVE) && !isDBTypeSelected(EDatabaseConnTemplate.IMPALA)) {
             clearHadoopRelatedParameters();
         }
-    
+
     }
 
     private void resetControls() {
@@ -5459,10 +5462,10 @@ public class DatabaseForm extends AbstractForm {
         if (!checkGeneralDB || getConnectionDBType().equals(EDatabaseConnTemplate.ACCESS.getDBDisplayName())) {
             getConnection().setURL(getStringConnection());
         }
-//        boolean isTeradata = EDatabaseTypeName.TERADATA.getDisplayName().equals(getConnectionDBType());
-//        sqlModeLabel.setVisible(isTeradata);
-//        button1.setVisible(isTeradata);
-//        button2.setVisible(isTeradata);
+        // boolean isTeradata = EDatabaseTypeName.TERADATA.getDisplayName().equals(getConnectionDBType());
+        // sqlModeLabel.setVisible(isTeradata);
+        // button1.setVisible(isTeradata);
+        // button2.setVisible(isTeradata);
         /*
          * commet by bug 12811
          */
@@ -5509,11 +5512,11 @@ public class DatabaseForm extends AbstractForm {
                 }
             }
         }
-//
-//        if (getConnectionDBType().length() <= 0) {
-//            updateStatus(IStatus.ERROR, Messages.getString("DatabaseForm.alert", "DB Type")); //$NON-NLS-1$
-//            return false;
-//        }
+        //
+        // if (getConnectionDBType().length() <= 0) {
+        //            updateStatus(IStatus.ERROR, Messages.getString("DatabaseForm.alert", "DB Type")); //$NON-NLS-1$
+        // return false;
+        // }
 
         // Show Database Properties
         // if (!isModify) {
@@ -6581,7 +6584,7 @@ public class DatabaseForm extends AbstractForm {
     @Override
     protected void adaptFormToEditable() {
         super.adaptFormToEditable();
-//        dbTypeCombo.setReadOnly(isContextMode());
+        // dbTypeCombo.setReadOnly(isContextMode());
 
         urlConnectionStringText.setEditable(!isContextMode());
         usernameText.setEditable(!isContextMode());
@@ -6596,8 +6599,8 @@ public class DatabaseForm extends AbstractForm {
         fileField.setEditable(!isContextMode());
         directoryField.setEditable(!isContextMode());
 
-//        button1.setEnabled(!isContextMode());
-//        button2.setEnabled(!isContextMode());
+        // button1.setEnabled(!isContextMode());
+        // button2.setEnabled(!isContextMode());
         // hshen
         generalJdbcUrlText.setEditable(!isContextMode());
 
@@ -7046,8 +7049,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Registers a listener for the text widget of metastore connection url, it invokes
-     * {@link #doMetastoreConnURLModify()()} when the text contents is changed. Added by Marvin Wang on Oct 17, 2012.
+     * Registers a listener for the text widget of metastore connection url, it invokes {@link #doMetastoreConnURLModify()()} when
+     * the text contents is changed. Added by Marvin Wang on Oct 17, 2012.
      */
     private void regHiveRelatedWidgetMetastoreConnURLListener() {
         metastoreConnURLTxt.getTextControl().addModifyListener(new ModifyListener() {
@@ -7878,10 +7881,10 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Invokes this method to handle the status of other widgets, for hive the following widgets need to handle: <li>The
-     * text widget of userName, variable is <code>usernameText</code>.</li> <li>The text widget of password, variable is
-     * <code>passwordText</code>.</li> <li>The text widget of database, variable is <code>sidOrDatabaseText</code>.</li>
-     * <li>The text widget of schema, variable is <code>schemaText</code>.</li> All these will be hidden when the
+     * Invokes this method to handle the status of other widgets, for hive the following widgets need to handle: <li>The text
+     * widget of userName, variable is <code>usernameText</code>.</li> <li>The text widget of password, variable is
+     * <code>passwordText</code>.</li> <li>The text widget of database, variable is <code>sidOrDatabaseText</code>.</li> <li>The
+     * text widget of schema, variable is <code>schemaText</code>.</li> All these will be hidden when the
      * current db type is <code>Hive</code> and the current hive mode is <code>STANDALONE</code>. Otherwise, all will be
      * visible when the current db type is <code>Hive</code> and the current hive mode is <code>EMBEDDED</code>. Added
      * by Marvin Wang on Oct 17, 2012.
@@ -8089,8 +8092,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Indentifies the hive mode selected in hive mode combo is standalone or embedded. If embedded, return
-     * <code>true</code>, <code>false</code> otherwise.
+     * Indentifies the hive mode selected in hive mode combo is standalone or embedded. If embedded, return <code>true</code>,
+     * <code>false</code> otherwise.
      * 
      * @return
      */
@@ -8240,10 +8243,10 @@ public class DatabaseForm extends AbstractForm {
         collectContextParams();
         super.exportAsContext();
     }
-    
-    private String getConnectionDBType(){
-        if(getConnection() == null || getConnection().getDatabaseType() == null){
-           return ""; 
+
+    private String getConnectionDBType() {
+        if (getConnection() == null || getConnection().getDatabaseType() == null) {
+            return "";
         }
         return getConnection().getDatabaseType();
     }
