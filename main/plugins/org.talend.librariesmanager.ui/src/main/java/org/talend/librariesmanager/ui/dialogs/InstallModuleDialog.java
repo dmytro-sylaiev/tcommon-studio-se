@@ -142,9 +142,7 @@ public class InstallModuleDialog extends TitleAreaDialog implements ICellEditorD
     @Override
     public void layoutWarningComposite(boolean exclude) {
         warningLayoutData.exclude = exclude;
-        warningLabel
-                .setText(Messages.getString("InstallModuleDialog.warning", defaultURIValue)
-                        + "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddjjjjjjjjjjjjjjjjjjjjdddddddddd");
+        warningLabel.setText(Messages.getString("InstallModuleDialog.warning", defaultURIValue));
         warningLabel.getParent().getParent().layout();
     }
 
