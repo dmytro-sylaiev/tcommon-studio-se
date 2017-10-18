@@ -135,7 +135,9 @@ public class MavenURIComposite {
                 moduleDialog.layoutWarningComposite(false);
                 if (useCustomBtn.getSelection()) {
                     customUriText.setEnabled(true);
-                    customUriText.setText(cusormURIValue);
+                    if ("".equals(customUriText.getText())) {
+                        customUriText.setText(cusormURIValue);
+                    }
                 } else {
                     customUriText.setEnabled(false);
                 }

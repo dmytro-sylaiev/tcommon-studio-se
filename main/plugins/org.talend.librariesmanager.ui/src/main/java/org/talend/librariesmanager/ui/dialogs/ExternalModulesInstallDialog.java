@@ -175,10 +175,10 @@ public class ExternalModulesInstallDialog extends TitleAreaDialog implements IMo
         tableViewerCreator.createTable();
 
         createJarNameColumn();
-        createModuleNameColumn();
         createContextColumn();
         createRequiredColumn();
         createLicenseColumn();
+        createMavenURIColumn();
 
         urlcolumn = createMoreInformationColumn();
 
@@ -288,17 +288,17 @@ public class ExternalModulesInstallDialog extends TitleAreaDialog implements IMo
     /**
      * DOC sgandon Comment method "createModuleNameColumn".
      */
-    public void createModuleNameColumn() {
+    public void createMavenURIColumn() {
         TableViewerCreatorColumn<ModuleToInstall, String> column = new TableViewerCreatorColumn<ModuleToInstall, String>(
                 tableViewerCreator);
-        column.setTitle(Messages.getString("ExternalModulesInstallDialog_ColumnModuleName")); //$NON-NLS-1$
-        column.setToolTipHeader(Messages.getString("ExternalModulesInstallDialog_ColumnModuleName")); //$NON-NLS-1$
+        column.setTitle(Messages.getString("ExternalModulesInstallDialog.mvnuri_columnModuleName")); //$NON-NLS-1$
+        column.setToolTipHeader(Messages.getString("ExternalModulesInstallDialog.mvnuri_columnModuleName")); //$NON-NLS-1$
         column.setSortable(true);
         column.setBeanPropertyAccessors(new IBeanPropertyAccessors<ModuleToInstall, String>() {
 
             @Override
             public String get(ModuleToInstall bean) {
-                return bean.getDescription();
+                return bean.getMavenUri();
             }
 
             @Override
@@ -306,7 +306,7 @@ public class ExternalModulesInstallDialog extends TitleAreaDialog implements IMo
                 // read only
             }
         });
-        column.setWeight(4);
+        column.setWeight(6);
         column.setModifiable(false);
     }
 
@@ -333,7 +333,7 @@ public class ExternalModulesInstallDialog extends TitleAreaDialog implements IMo
         });
 
         column.setModifiable(false);
-        column.setWeight(5);
+        column.setWeight(4);
     }
 
     /**
@@ -415,7 +415,7 @@ public class ExternalModulesInstallDialog extends TitleAreaDialog implements IMo
         column.setToolTipHeader(Messages.getString("ExternalModulesInstallDialog_ColumnUrl")); //$NON-NLS-1$
         column.setModifiable(false);
         column.setSortable(true);
-        column.setWeight(7);
+        column.setWeight(4);
         // set bean property accessor to allow sort by url name
         column.setBeanPropertyAccessors(new IBeanPropertyAccessors<ModuleToInstall, String>() {
 
