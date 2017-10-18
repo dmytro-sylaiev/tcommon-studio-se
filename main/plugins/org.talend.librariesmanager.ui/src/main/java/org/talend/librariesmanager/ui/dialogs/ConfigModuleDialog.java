@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.IConfigModuleDialog;
@@ -143,13 +144,21 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         layout.marginLeft = 20;
         layout.marginRight = 20;
         layout.marginBottom = 100;
+        layout.marginHeight = 0;
         container.setLayout(layout);
         GridData data = new GridData(GridData.FILL_BOTH);
         container.setLayoutData(data);
         createWarningLabel(container);
 
-        createPlatformGroup(container);
-        createRepositoryGroup(container);
+        Composite radioContainer = new Composite(container, SWT.NONE);
+        layout = new GridLayout();
+        layout.numColumns = 2;
+        radioContainer.setLayout(layout);
+        data = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
+        radioContainer.setLayoutData(data);
+        createPlatformGroup(radioContainer);
+        createRepositoryGroup(radioContainer, container);
+
         createMavenURIGroup(container);
         return parent;
     }
@@ -158,6 +167,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         Composite mvnContainer = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginLeft = 0;
+        layout.marginBottom = 5;
         layout.numColumns = 3;
         mvnContainer.setLayout(layout);
         GridData layoutData = new GridData(GridData.FILL_BOTH);
@@ -169,6 +179,17 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
     @Override
     protected Control createContents(Composite parent) {
         Control control = super.createContents(parent);
+        if (!StringUtils.isEmpty(moduleName) && !jarsAvailable.contains(moduleName)) {
+            setPlatformGroupEnabled(false);
+            setRepositoryGroupEnabled(true);
+            installRadioBtn.setSelection(false);
+            findRadioBtn.setSelection(true);
+            showFindExisting();
+            nameTxt.setText(moduleName);
+        } else {
+            setPlatformGroupEnabled(true);
+            setRepositoryGroupEnabled(false);
+        }
         return control;
     }
 
@@ -222,14 +243,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         // layoutChildernComp(parent);
     }
 
-    private void createPlatformGroup(Composite container) {
-        Composite composite = new Composite(container, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 2;
-        composite.setLayout(layout);
-        GridData data = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL);
-        composite.setLayoutData(data);
-
+    private void createPlatformGroup(Composite composite) {
         platfromRadioBtn = new Button(composite, SWT.RADIO);
         platfromRadioBtn.setText(Messages.getString("ConfigModuleDialog.platfromBtn"));
 
@@ -261,11 +275,11 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         };
         Arrays.sort(moduleValueArray, comprarator);
         platformCombo.setItems(moduleValueArray);
-        platformCombo.setText("");
         if (!StringUtils.isEmpty(initValue) && jarsAvailable.contains(initValue)) {
             platformCombo.setText(initValue);
+        } else {
+            platformCombo.setText(moduleValueArray[0]);
         }
-
         if (!StringUtils.isEmpty(initValue)) {
             ModuleNeeded testModuel = new ModuleNeeded("", initValue, "", true);
             defaultURIValue = testModuel.getDefaultMavenURI();
@@ -296,23 +310,15 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         platformCombo.setText("");
     }
 
-    private void createRepositoryGroup(Composite container) {
-        Composite composite = new Composite(container, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        layout.marginBottom = 0;
-        layout.verticalSpacing = 0;
-        composite.setLayout(layout);
-        GridData data = new GridData(GridData.FILL_BOTH);
-        composite.setLayoutData(data);
-
-        repositoryRadioBtn = new Button(composite, SWT.RADIO);
+    private void createRepositoryGroup(Composite radioContainer, Composite container) {
+        repositoryRadioBtn = new Button(radioContainer, SWT.RADIO);
         repositoryRadioBtn.setText(Messages.getString("ConfigModuleDialog.repositoryBtn"));
-        data = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL);
+        GridData data = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL);
+        data.horizontalSpan = 2;
         repositoryRadioBtn.setLayoutData(data);
 
-        Group repGroupSubComp = new Group(composite, SWT.SHADOW_IN);
-        layout = new GridLayout();
-        layout.marginTop = 0;
+        Group repGroupSubComp = new Group(container, SWT.SHADOW_IN);
+        GridLayout layout = new GridLayout();
         repGroupSubComp.setLayout(layout);
         data = new GridData(GridData.FILL_BOTH);
         data.horizontalIndent = 30;
@@ -466,7 +472,9 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             @Override
             public void modifyText(ModifyEvent e) {
                 moduleName = nameTxt.getText().trim();
-                mavenURIComposite.setupMavenURIByModuleName(moduleName);
+                if (!"".equals(moduleName)) {
+                    mavenURIComposite.setupMavenURIByModuleName(moduleName);
+                }
                 checkFieldsError();
             }
         });
@@ -549,14 +557,20 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
 
                     @Override
                     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                        try {
-                            monitor.beginTask("Install module " + file.getName(), 100);
-                            monitor.worked(10);
-                            LibManagerUiPlugin.getDefault().getLibrariesService().deployLibrary(file.toURL(), urlToUse);
-                            monitor.done();
-                        } catch (IOException e) {
-                            ExceptionHandler.process(e);
-                        }
+                        monitor.beginTask("Install module " + file.getName(), 100);
+                        monitor.worked(10);
+                        DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try {
+                                    LibManagerUiPlugin.getDefault().getLibrariesService().deployLibrary(file.toURL(), urlToUse);
+                                } catch (IOException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
+                        });
+                        monitor.done();
                     }
                 };
 

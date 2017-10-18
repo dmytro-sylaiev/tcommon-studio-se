@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.dialogs.IConfigModuleDialog;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
@@ -313,15 +314,21 @@ public class MavenURIComposite {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     NexusServerBean customNexusServer = TalendLibsServerManager.getInstance().getCustomNexusServer();
                     if (customNexusServer != null) {
+                        File resolveJar = null;
                         try {
-
-                            File resolveJar = libManagerService.resolveJar(customNexusServer, mvnURI);
-                            if (resolveJar != null) {
-                                deployStatus[0] = true;
-                                LibManagerUiPlugin.getDefault().getLibrariesService().checkLibraries();
-                            }
+                            resolveJar = libManagerService.resolveJar(customNexusServer, mvnURI);
                         } catch (Exception e) {
                             deployStatus[0] = false;
+                        }
+                        if (resolveJar != null) {
+                            deployStatus[0] = true;
+                            DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    LibManagerUiPlugin.getDefault().getLibrariesService().checkLibraries();
+                                }
+                            });
                         }
                     }
                 }
