@@ -355,6 +355,10 @@ public class MavenURIComposite {
             useCustomBtn.setSelection(true);
             customUriText.setEnabled(true);
             customUriText.setText(customMavenUri);
+        } else {
+            useCustomBtn.setSelection(false);
+            customUriText.setEnabled(false);
+            customUriText.setText("");
         }
     }
 

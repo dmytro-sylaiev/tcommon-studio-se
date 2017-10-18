@@ -44,6 +44,16 @@ public class CustomMavenURIValidator {
     public static final String expression3 = "(mvn:(\\w+.*/)(\\w+.*/)([0-9]+(\\.[0-9])+(-SNAPSHOT){0,1}))";//$NON-NLS-1$
 
     public static String validateCustomMvnURI(String originalText, String customText) {
+        if (customText.equals(originalText)) {
+            return Messages.getString("InstallModuleDialog.error.sameCustomURI");
+        }
+        if (!validateMvnURI(customText)) {
+            return Messages.getString("InstallModuleDialog.error.customURI");
+        }
+        return null;
+    }
+
+    public static boolean validateMvnURI(String mvnURI) {
         if (pattern == null) {
             try {
                 pattern = compiler.compile(expression1 + "|" + expression2 + "|" + expression3);
@@ -51,15 +61,9 @@ public class CustomMavenURIValidator {
                 ExceptionHandler.process(e);
             }
         }
-        if (customText.equals(originalText)) {
-            return Messages.getString("InstallModuleDialog.error.sameCustomURI");
-        }
-        patternMatcherInput = new PatternMatcherInput(customText);
+        patternMatcherInput = new PatternMatcherInput(mvnURI);
         matcher.setMultiline(false);
         boolean isMatch = matcher.matches(patternMatcherInput, pattern);
-        if (!isMatch) {
-            return Messages.getString("InstallModuleDialog.error.customURI");
-        }
-        return null;
+        return isMatch;
     }
 }

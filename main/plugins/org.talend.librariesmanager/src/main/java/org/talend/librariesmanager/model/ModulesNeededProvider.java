@@ -173,11 +173,12 @@ public class ModulesNeededProvider {
                 // Custom URI Mapping
                 Set<String> modulesNeededMVNURIs = getModulesNeededDefaultMVNURIs();
                 for (String mvnURIKey : new HashSet<String>(CustomUriManager.getInstance().keySet())) {
-                    String mvnURI = CustomUriManager.getInstance().get(mvnURIKey);
-                    if (!modulesNeededMVNURIs.contains(mvnURI)) {
-                        if (libManagerService.getJarPathFromMaven(mvnURI) != null) {
-                            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnURI);
-                            addUnknownModules(artifact.getArtifactId() + "." + artifact.getType(), mvnURI, false);
+                    String customMvnURI = CustomUriManager.getInstance().get(mvnURIKey);
+                    if (!modulesNeededMVNURIs.contains(mvnURIKey)) {
+                        if (libManagerService.getJarPathFromMaven(customMvnURI) != null) {
+                            // use the key to create the module and set default module.
+                            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnURIKey);
+                            addUnknownModules(artifact.getArtifactId() + "." + artifact.getType(), mvnURIKey, false);
                         }
                     }
                 }
