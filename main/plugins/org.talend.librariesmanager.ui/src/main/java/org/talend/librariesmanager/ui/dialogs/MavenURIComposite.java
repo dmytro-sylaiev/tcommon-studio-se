@@ -132,7 +132,7 @@ public class MavenURIComposite {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // show the warning if useCustomBtn select/deselect
-                moduleDialog.layoutWarningComposite(false);
+                moduleDialog.layoutWarningComposite(false, defaultUriTxt.getText());
                 if (useCustomBtn.getSelection()) {
                     customUriText.setEnabled(true);
                     if ("".equals(customUriText.getText())) {

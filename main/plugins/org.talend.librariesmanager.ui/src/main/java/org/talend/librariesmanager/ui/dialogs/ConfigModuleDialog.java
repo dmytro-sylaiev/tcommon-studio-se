@@ -232,9 +232,9 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
      * @see org.talend.commons.ui.swt.dialogs.IConfigModuleDialog#layoutWarningComposite()
      */
     @Override
-    public void layoutWarningComposite(boolean exclude) {
+    public void layoutWarningComposite(boolean exclude, String defaultMvnURI) {
         warningLayoutData.exclude = exclude;
-        warningLabel.setText(Messages.getString("InstallModuleDialog.warning", defaultURIValue) + "");
+        warningLabel.setText(Messages.getString("InstallModuleDialog.warning", defaultMvnURI));
         // warningLabel.getParent().getParent().getParent().layout();
         Composite parent = warningLabel.getParent().getParent();
         GridLayout layout = (GridLayout) parent.getLayout();
@@ -255,6 +255,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             public void widgetSelected(SelectionEvent e) {
                 setPlatformGroupEnabled(true);
                 setRepositoryGroupEnabled(false);
+                mavenURIComposite.setupMavenURIByModuleName(platformCombo.getText());
             }
         });
 
@@ -502,7 +503,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                 }
             }
         }
-        boolean checkMavenURI = !platfromRadioBtn.getSelection() || mavenURIComposite.useCustomBtn.getSelection();
+        boolean checkMavenURI = mavenURIComposite.useCustomBtn.getSelection();
         if (checkMavenURI) {
             boolean statusOK = mavenURIComposite.checkFieldsError();
             if (!statusOK) {
@@ -586,16 +587,18 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             }
         }
 
-        Set<String> modulesNeededNames = ModulesNeededProvider.getModulesNeededNames();
+        boolean saveCustomMap = customURI != null;
+        Set<String> modulesNeededNames = ModulesNeededProvider.getAllManagedModuleNames();
         if (!modulesNeededNames.contains(moduleName)) {
-            ModulesNeededProvider.addUnknownModules(moduleName, urlToUse, false);
+            ModulesNeededProvider.addUnknownModules(moduleName, originalURI, false);
             // key and value will be the same for custom jar if without custom uri
+            saveCustomMap = true;
             if (customURI == null) {
                 customURI = urlToUse;
             }
         }
         // change the custom uri
-        if (!StringUtils.isEmpty(customURI)) {
+        if (saveCustomMap) {
             ModuleNeeded testModule = new ModuleNeeded("", "", true, originalURI);
             testModule.setCustomMavenUri(customURI);
             ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(

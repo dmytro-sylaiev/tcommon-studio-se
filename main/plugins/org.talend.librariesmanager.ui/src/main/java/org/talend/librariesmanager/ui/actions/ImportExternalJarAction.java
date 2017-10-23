@@ -90,7 +90,7 @@ public class ImportExternalJarAction extends Action {
 
             @Override
             public void run() {
-                Set<String> modulesNeededNames = ModulesNeededProvider.getModulesNeededNames();
+                Set<String> modulesNeededNames = ModulesNeededProvider.getAllManagedModuleNames();
                 if (fileNames.length > 0) {
                     boolean modified = false;
                     if (fileNames.length > 1) {

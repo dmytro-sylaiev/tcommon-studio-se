@@ -229,6 +229,14 @@ public class ModulesNeededProvider {
         return componentImportNeedsListNames;
     }
 
+    public static Set<String> getAllManagedModuleNames() {
+        Set<String> moduleNames = new HashSet<String>();
+        for (ModuleNeeded m : getAllManagedModules()) {
+            moduleNames.add(m.getModuleName());
+        }
+        return moduleNames;
+    }
+
     public static Set<String> getModulesNeededDefaultMVNURIs() {
         Set<String> mvnURIs = new HashSet<String>();
         for (ModuleNeeded m : getModulesNeeded()) {

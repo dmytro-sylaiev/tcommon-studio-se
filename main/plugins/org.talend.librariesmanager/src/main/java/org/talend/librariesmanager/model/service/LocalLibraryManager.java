@@ -223,6 +223,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (urisFromIndex != null) {
             final String[] mvnUris = urisFromIndex.split(MavenUrlHelper.MVN_INDEX_SPLITER);
             for (String uri : mvnUris) {
+                String customMavenURI = getCustomMavenURI(uri);
+                if (customMavenURI != null) {
+                    uri = customMavenURI;
+                }
                 sourceAndMavenUri.put(uri, jarFile.getAbsolutePath());
                 if (deployAsDefault) {
                     MavenArtifact parseMvnUrl = MavenUrlHelper.parseMvnUrl(uri);
@@ -237,6 +241,10 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         // index
         if (deployAsDefault) {
             String defaultMavenUri = MavenUrlHelper.generateMvnUrlForJarName(jarFile.getName());
+            String customMavenURI = getCustomMavenURI(defaultMavenUri);
+            if (customMavenURI != null) {
+                defaultMavenUri = customMavenURI;
+            }
             sourceAndMavenUri.put(defaultMavenUri, jarFile.getAbsolutePath());
         }
 

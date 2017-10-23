@@ -35,7 +35,7 @@ public interface IConfigModuleDialog {
 
     public Shell getShell();
 
-    public void layoutWarningComposite(boolean exclude);
+    public void layoutWarningComposite(boolean exclude, String defaultMvnURI);
 
     public boolean checkFieldsError();
 
