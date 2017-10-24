@@ -174,6 +174,7 @@ public class MavenURIComposite {
         String originalText = defaultUriTxt.getText().trim();
         String customURIWithType = MavenUrlHelper.addTypeForMavenUri(customUriText.getText(), moduleName);
         ELibraryInstallStatus status = null;
+        String mvnURI2Detect = "";
         if (useCustomBtn.getSelection()) {
             // if use custom uri:validate custom uri + check deploy status
             String errorMessage = CustomMavenURIValidator.validateCustomMvnURI(originalText, customURIWithType);
@@ -188,18 +189,18 @@ public class MavenURIComposite {
                 moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.jarexsit"), IMessageProvider.ERROR);
                 return false;
             }
-
+            mvnURI2Detect = customURIWithType;
         } else {
             status = getMavenURIInstallStatus(originalText);
             if (status == ELibraryInstallStatus.DEPLOYED) {
                 moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.jarexsit"), IMessageProvider.ERROR);
                 return false;
             }
-
+            mvnURI2Detect = originalText;
         }
 
         // check deploy status from remote
-        boolean statusOK = checkDetectButtonStatus(status);
+        boolean statusOK = checkDetectButtonStatus(status, mvnURI2Detect);
         if (!statusOK) {
             return false;
         }
@@ -213,6 +214,7 @@ public class MavenURIComposite {
         String originalText = defaultUriTxt.getText().trim();
         String customURIWithType = MavenUrlHelper.addTypeForMavenUri(customUriText.getText(), moduleName);
         ELibraryInstallStatus status = null;
+        String mavenURI2Detect = "";
         if (useCustomBtn.getSelection()) {
             // if use custom uri: validate custom uri + check deploy status
             String message = CustomMavenURIValidator.validateCustomMvnURI(originalText, customURIWithType);
@@ -222,18 +224,22 @@ public class MavenURIComposite {
                 return false;
             }
             status = getMavenURIInstallStatus(customURIWithType);
+            mavenURI2Detect = customURIWithType;
         } else {
             status = getMavenURIInstallStatus(originalText);
+            mavenURI2Detect = originalText;
         }
         if (status == null) {
-            moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI"), IMessageProvider.ERROR);
+            moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI", mavenURI2Detect),
+                    IMessageProvider.ERROR);
             detectButton.setEnabled(true);
             return false;
         }
         if (status != ELibraryInstallStatus.DEPLOYED) {
             NexusServerBean customNexusServer = TalendLibsServerManager.getInstance().getCustomNexusServer();
             if (customNexusServer != null) {
-                moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI"), IMessageProvider.ERROR);
+                moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI", mavenURI2Detect),
+                        IMessageProvider.ERROR);
                 detectButton.setEnabled(true);
                 return false;
             } else {
@@ -259,11 +265,12 @@ public class MavenURIComposite {
         return deployStatus;
     }
 
-    protected boolean checkDetectButtonStatus(ELibraryInstallStatus localStatus) {
+    protected boolean checkDetectButtonStatus(ELibraryInstallStatus localStatus, String mavenURI) {
         NexusServerBean customNexusServer = TalendLibsServerManager.getInstance().getCustomNexusServer();
         if (customNexusServer != null || localStatus == null) {
             detectButton.setEnabled(true);
-            moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI"), IMessageProvider.ERROR);
+            moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI", mavenURI),
+                    IMessageProvider.ERROR);
             return false;
         }
         return true;

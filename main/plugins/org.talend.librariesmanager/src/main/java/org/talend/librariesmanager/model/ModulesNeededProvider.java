@@ -173,13 +173,11 @@ public class ModulesNeededProvider {
                 // Custom URI Mapping
                 Set<String> modulesNeededMVNURIs = getModulesNeededDefaultMVNURIs();
                 for (String mvnURIKey : new HashSet<String>(CustomUriManager.getInstance().keySet())) {
-                    String customMvnURI = CustomUriManager.getInstance().get(mvnURIKey);
                     if (!modulesNeededMVNURIs.contains(mvnURIKey)) {
-                        if (libManagerService.getJarPathFromMaven(customMvnURI) != null) {
-                            // use the key to create the module and set default module.
-                            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnURIKey);
-                            addUnknownModules(artifact.getArtifactId() + "." + artifact.getType(), mvnURIKey, false);
-                        }
+                        // use the key(defulat value) to create the unknown module ,no need to set the custom maven uri
+                        // ,it can be get from the index
+                        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(mvnURIKey);
+                        addUnknownModules(artifact.getArtifactId() + "." + artifact.getType(), mvnURIKey, false);
                     }
                 }
             } catch (MalformedURLException e) {

@@ -294,6 +294,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             @Override
             public void modifyText(ModifyEvent e) {
                 moduleName = platformCombo.getText();
+                mavenURIComposite.setupMavenURIByModuleName(platformCombo.getText());
             }
         });
     }
@@ -304,11 +305,11 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         if (enable) {
             if (platfromRadioBtn.getSelection()) {
                 mavenURIComposite.setInstall(false);
+                mavenURIComposite.setupMavenURIByModuleName(platformCombo.getText());
             }
             setMessage(Messages.getString("ConfigModuleDialog.message"), IMessageProvider.INFORMATION);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
         }
-        platformCombo.setText("");
     }
 
     private void createRepositoryGroup(Composite radioContainer, Composite container) {
@@ -503,12 +504,9 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
                 }
             }
         }
-        boolean checkMavenURI = mavenURIComposite.useCustomBtn.getSelection();
-        if (checkMavenURI) {
-            boolean statusOK = mavenURIComposite.checkFieldsError();
-            if (!statusOK) {
-                return false;
-            }
+        boolean statusOK = mavenURIComposite.checkFieldsError();
+        if (!statusOK) {
+            return false;
         }
 
         setMessage(Messages.getString("ConfigModuleDialog.message"), IMessageProvider.INFORMATION);
@@ -587,7 +585,9 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
             }
         }
 
-        boolean saveCustomMap = customURI != null;
+        ModuleNeeded testModule = new ModuleNeeded("", "", true, originalURI);
+        String oldCustomUri = testModule.getCustomMavenUri();
+        boolean saveCustomMap = !StringUtils.equals(customURI, oldCustomUri);
         Set<String> modulesNeededNames = ModulesNeededProvider.getAllManagedModuleNames();
         if (!modulesNeededNames.contains(moduleName)) {
             ModulesNeededProvider.addUnknownModules(moduleName, originalURI, false);
@@ -599,7 +599,6 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         }
         // change the custom uri
         if (saveCustomMap) {
-            ModuleNeeded testModule = new ModuleNeeded("", "", true, originalURI);
             testModule.setCustomMavenUri(customURI);
             ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
                     ILibraryManagerService.class);
