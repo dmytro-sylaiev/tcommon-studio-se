@@ -74,6 +74,8 @@ public class MavenURIComposite {
 
     boolean isInstall = true;
 
+    boolean findInRepository = true;
+
     public MavenURIComposite(IConfigModuleDialog moduleDialog, String moduleName, String defaultURIValue, String cusormURIValue) {
         this.moduleDialog = moduleDialog;
         this.moduleName = moduleName;
@@ -229,13 +231,13 @@ public class MavenURIComposite {
             status = getMavenURIInstallStatus(originalText);
             mavenURI2Detect = originalText;
         }
-        if (status == null) {
+        if (findInRepository && status == null) {
             moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI", mavenURI2Detect),
                     IMessageProvider.ERROR);
             detectButton.setEnabled(true);
             return false;
         }
-        if (status != ELibraryInstallStatus.DEPLOYED) {
+        if (findInRepository && status != ELibraryInstallStatus.DEPLOYED) {
             NexusServerBean customNexusServer = TalendLibsServerManager.getInstance().getCustomNexusServer();
             if (customNexusServer != null) {
                 moduleDialog.setMessage(Messages.getString("InstallModuleDialog.error.detectMvnURI", mavenURI2Detect),
@@ -385,6 +387,15 @@ public class MavenURIComposite {
      */
     public void setInstall(boolean isInstall) {
         this.isInstall = isInstall;
+    }
+
+    /**
+     * Sets the findInRepository.
+     * 
+     * @param findInRepository the findInRepository to set
+     */
+    public void setFindInRepository(boolean findInRepository) {
+        this.findInRepository = findInRepository;
     }
 
 }

@@ -914,16 +914,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         if (MavenUrlHelper.isMvnUrl(jarNameOrMavenUri)) {
             mvnUris.add(jarNameOrMavenUri);
         } else {
-            EMap<String, String> jarsToMavenUri = LibrariesIndexManager.getInstance().getMavenLibIndex().getJarsToRelativePath();
-            String mavenUri = jarsToMavenUri.get(jarNameOrMavenUri);
-            if (mavenUri == null) {
-                mvnUris.add(MavenUrlHelper.generateMvnUrlForJarName(jarNameOrMavenUri));
-            } else {
-                // TODO????? get the first existing one
-                for (String uri : mavenUri.split(MavenUrlHelper.MVN_INDEX_SPLITER)) {
-                    mvnUris.add(uri);
-                }
-            }
+            ModuleNeeded testModule = new ModuleNeeded("", jarNameOrMavenUri, "", true);
+            mvnUris.addAll(guessMavenURI(testModule));
         }
         for (String uriToCheck : mvnUris) {
             if (checkJarInstalledInMaven(uriToCheck)) {
@@ -1384,18 +1376,8 @@ public class LocalLibraryManager implements ILibraryManagerService, IChangedLibr
         for (File svnLibFile : libDirectory.listFiles()) {
             if (svnLibFile.isFile()) {
                 String jarName = svnLibFile.getName();
-                EMap<String, String> jarsToMavenUri = LibrariesIndexManager.getInstance().getMavenLibIndex()
-                        .getJarsToRelativePath();
-                Set<String> toDeploy = new HashSet<String>();
-                String mvnUri = jarsToMavenUri.get(jarName);
-                if (mvnUri == null) {
-                    toDeploy.add(MavenUrlHelper.generateMvnUrlForJarName(jarName));
-                } else {
-                    final String[] split = mvnUri.split(MavenUrlHelper.MVN_INDEX_SPLITER);
-                    for (String uri : split) {
-                        toDeploy.add(uri);
-                    }
-                }
+                ModuleNeeded testModule = new ModuleNeeded("", jarName, "", true);
+                Set<String> toDeploy = guessMavenURI(testModule);
                 for (String uriToDeploy : toDeploy) {
                     MavenArtifact parseMvnUrl = MavenUrlHelper.parseMvnUrl(uriToDeploy);
                     // only can redeploy for snapshot

@@ -80,7 +80,7 @@ public class TalendLibsServerManager {
 
     private long softWareLastTimeInMillis = 0;
 
-    private int timeGap = 5 * 60 * 1000;
+    private int timeGap = 30 * 60 * 1000;
 
     public static synchronized TalendLibsServerManager getInstance() {
         if (manager == null) {

@@ -305,6 +305,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         if (enable) {
             if (platfromRadioBtn.getSelection()) {
                 mavenURIComposite.setInstall(false);
+                mavenURIComposite.setFindInRepository(false);
                 mavenURIComposite.setupMavenURIByModuleName(platformCombo.getText());
             }
             setMessage(Messages.getString("ConfigModuleDialog.message"), IMessageProvider.INFORMATION);
@@ -524,6 +525,7 @@ public class ConfigModuleDialog extends TitleAreaDialog implements IConfigModule
         findRadioBtn.setEnabled(enable);
         nameTxt.setEnabled(enable);
         if (enable) {
+            mavenURIComposite.setFindInRepository(true);
             mavenURIComposite.customUriText.setEnabled(mavenURIComposite.useCustomBtn.getSelection());
             if (installRadioBtn.getSelection()) {
                 mavenURIComposite.setInstall(true);

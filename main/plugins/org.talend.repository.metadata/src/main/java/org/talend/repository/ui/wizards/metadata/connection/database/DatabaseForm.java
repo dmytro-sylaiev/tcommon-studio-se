@@ -5342,7 +5342,7 @@ public class DatabaseForm extends AbstractForm {
                 String driverStr = generalJdbcDriverjarText.getText();
                 String values[] = new String[0];
                 if (driverStr != null && driverStr.length() > 0) {
-                    values = driverStr.split(",");
+                    values = driverStr.split(";");
                 }
                 List<String> asList = new ArrayList<String>(Arrays.asList(values));
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ILibraryManagerUIService.class)) {
@@ -5360,7 +5360,7 @@ public class DatabaseForm extends AbstractForm {
                 for (int i = 0; i < asList.size(); i++) {
                     result.append(asList.get(i));
                     if (i < asList.size() - 1) {
-                        result.append(",");
+                        result.append(";");
                     }
                 }
                 generalJdbcDriverjarText.setText(result.toString());
@@ -7049,8 +7049,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Registers a listener for the text widget of metastore connection url, it invokes {@link #doMetastoreConnURLModify()()} when
-     * the text contents is changed. Added by Marvin Wang on Oct 17, 2012.
+     * Registers a listener for the text widget of metastore connection url, it invokes
+     * {@link #doMetastoreConnURLModify()()} when the text contents is changed. Added by Marvin Wang on Oct 17, 2012.
      */
     private void regHiveRelatedWidgetMetastoreConnURLListener() {
         metastoreConnURLTxt.getTextControl().addModifyListener(new ModifyListener() {
@@ -7881,10 +7881,10 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Invokes this method to handle the status of other widgets, for hive the following widgets need to handle: <li>The text
-     * widget of userName, variable is <code>usernameText</code>.</li> <li>The text widget of password, variable is
-     * <code>passwordText</code>.</li> <li>The text widget of database, variable is <code>sidOrDatabaseText</code>.</li> <li>The
-     * text widget of schema, variable is <code>schemaText</code>.</li> All these will be hidden when the
+     * Invokes this method to handle the status of other widgets, for hive the following widgets need to handle: <li>The
+     * text widget of userName, variable is <code>usernameText</code>.</li> <li>The text widget of password, variable is
+     * <code>passwordText</code>.</li> <li>The text widget of database, variable is <code>sidOrDatabaseText</code>.</li>
+     * <li>The text widget of schema, variable is <code>schemaText</code>.</li> All these will be hidden when the
      * current db type is <code>Hive</code> and the current hive mode is <code>STANDALONE</code>. Otherwise, all will be
      * visible when the current db type is <code>Hive</code> and the current hive mode is <code>EMBEDDED</code>. Added
      * by Marvin Wang on Oct 17, 2012.
@@ -8092,8 +8092,8 @@ public class DatabaseForm extends AbstractForm {
     }
 
     /**
-     * Indentifies the hive mode selected in hive mode combo is standalone or embedded. If embedded, return <code>true</code>,
-     * <code>false</code> otherwise.
+     * Indentifies the hive mode selected in hive mode combo is standalone or embedded. If embedded, return
+     * <code>true</code>, <code>false</code> otherwise.
      * 
      * @return
      */
